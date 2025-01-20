@@ -143,7 +143,11 @@ class EmployeeController {
 
 }
 
-@RepositoryRestResource
+/*
+    Collection resource is just the description for entity path describe the path for the
+    http request here it is http://localhost:8080/employee and not employees which is default.
+ */
+@RepositoryRestResource(collectionResourceRel = "employee", path = "employee")
 interface EmployeeRepository extends JpaRepository<Employee, Long> {
 }
 
