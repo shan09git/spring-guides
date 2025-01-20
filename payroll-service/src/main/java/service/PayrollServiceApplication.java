@@ -13,7 +13,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpEntity;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 @SpringBootApplication
 public class PayrollServiceApplication {
@@ -95,14 +96,22 @@ class EmployeeController {
         }
     }
 
-    @GetMapping("/{id}")
-    @ResponseBody
+    @GetMapping("/find/{id}")
     ResponseEntity<Employee> getOne(@PathVariable Long id) {
         return this.employeeRepository
                 .findById(id)
-                .map(ResponseEntity::ok)
+                .map(emp -> ResponseEntity.ok(emp))
                 .orElseThrow(() -> new EmployeeNotFound(id, "Employee Not Found"));
     }
+
+    @GetMapping("/{id}")
+    EntityModel one(@PathVariable Long id) {
+        var employee = this.employeeRepository.findById(id);
+
+        return EntityModel.of(employee
+        );
+    }
+
 
     @PostMapping("/new")
     @ResponseBody
@@ -134,7 +143,7 @@ class EmployeeController {
 
 }
 
-
+@RepositoryRestResource
 interface EmployeeRepository extends JpaRepository<Employee, Long> {
 }
 
